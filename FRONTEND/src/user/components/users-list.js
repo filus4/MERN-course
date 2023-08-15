@@ -1,7 +1,7 @@
 import React from "react";
 
 import UserItem from "./user-item";
-
+import styles from "./users-list.module.css";
 const UsersList = (props) => {
   const { items } = props;
 
@@ -14,16 +14,18 @@ const UsersList = (props) => {
   }
 
   const mappedUsers = items.map((user) => {
-    <UserItem
-      key={user.id}
-      id={user.id}
-      image={user.image}
-      name={user.name}
-      placeCount={user.places}
-    />;
+    return (
+      <UserItem
+        key={user.id}
+        id={user.id}
+        image={user.image}
+        name={user.name}
+        placeCount={user.places}
+      />
+    );
   });
 
-  return <ul>{mappedUsers}</ul>;
+  return <ul className={styles.usersList}>{mappedUsers}</ul>;
 };
 
 export default UsersList;
