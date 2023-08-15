@@ -6,8 +6,8 @@ import {
   Switch,
 } from "react-router-dom/cjs/react-router-dom";
 
-import Users from "./user/pages/Users";
-import NewPlace from "./places/pages/NewPlace";
+import Users from "./user/pages/users";
+import NewPlace from "./places/pages/new-place";
 
 function App() {
   return (
