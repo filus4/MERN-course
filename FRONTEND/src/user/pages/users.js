@@ -1,10 +1,22 @@
 import React from "react";
 
+import UsersList from "../components/users-list";
+
+const DUMMY_USERS = [
+  {
+    id: 1,
+    name: "Marcel",
+    image:
+      "https://static.planetminecraft.com/files/image/minecraft/project/2021/199/14520222-aincradrender_xl.webp",
+    places: "3",
+  },
+];
+
 const Users = () => {
   return (
-    <div>
-      <h2>Users Works!</h2>
-    </div>
+    <>
+      <UsersList items={DUMMY_USERS} />
+    </>
   );
 };
 
