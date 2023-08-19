@@ -16,14 +16,12 @@ const MainNavigation = (props) => {
 
   return (
     <>
-      {drawerIsOpen && (
-        <SideDrawer>
-          <BackDrop onClick={toggleDrawerHandler} />
-          <nav className={styles["main-navigation__drawer-nav"]}>
-            <NavLinks />
-          </nav>
-        </SideDrawer>
-      )}
+      {drawerIsOpen && <BackDrop onClick={toggleDrawerHandler} />}
+      <SideDrawer show={drawerIsOpen} toggleDrawer={toggleDrawerHandler}>
+        <nav className={styles["main-navigation__drawer-nav"]}>
+          <NavLinks />
+        </nav>
+      </SideDrawer>
       <MainHeader>
         <button
           className={styles["main-navigation__menu-btn"]}

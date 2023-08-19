@@ -1,11 +1,23 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { CSSTransition } from "react-transition-group";
 
 import styles from "./side-drawer.module.css";
 
 const SideDrawer = (props) => {
+  const { show, toggleDrawer } = props;
   const content = (
-    <aside className={styles["side-drawer"]}>{props.children}</aside>
+    <CSSTransition
+      in={show}
+      timeout={200}
+      classNames={"slide-in-left"}
+      mountOnEnter
+      unmountOnExit
+    >
+      <aside className={styles["side-drawer"]} onClick={toggleDrawer}>
+        {props.children}
+      </aside>
+    </CSSTransition>
   );
   const drawer = document.getElementById("drawer-hook");
 
