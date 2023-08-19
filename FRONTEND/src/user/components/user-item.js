@@ -1,5 +1,6 @@
 import React from "react";
 
+import Avatar from "../../shared/components/UI/Avatar";
 import styles from "./user-item.module.css";
 
 const UserItem = (props) => {
@@ -10,7 +11,7 @@ const UserItem = (props) => {
     <li key={id} className={styles["user-item"]}>
       <div className={styles["user-item__content"]}>
         <div className={styles["user-item__image"]}>
-          <img src={image} alt={name} />
+          <Avatar image={image} alt={name} />
         </div>
         <div className={styles["user-item__info"]}>
           <h2>{name}</h2>

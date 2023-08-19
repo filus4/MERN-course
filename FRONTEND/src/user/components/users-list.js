@@ -25,7 +25,7 @@ const UsersList = (props) => {
     );
   });
 
-  return <ul className={styles.usersList}>{mappedUsers}</ul>;
+  return <ul className={styles["users-list"]}>{mappedUsers}</ul>;
 };
 
 export default UsersList;
