@@ -2,32 +2,25 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { CSSTransition } from "react-transition-group";
 
-import BackDrop from "./Backdrop";
-import styles from "./Modal.module.css";
+import Backdrop from "./Backdrop";
+import "./Modal.css";
 
 const ModalOverlay = (props) => {
-  const {
-    header,
-    className,
-    style,
-    headerClass,
-    onSubmit,
-    contentClass,
-    children,
-    footerClass,
-    footer,
-  } = props;
   const content = (
-    <div className={`${styles.modal} ${className}`} style={style}>
-      <header className={`${styles["modal__header"]} ${headerClass}`}>
-        <h2>{header}</h2>
+    <div className={`modal ${props.className}`} style={props.style}>
+      <header className={`modal__header ${props.headerClass}`}>
+        <h2>{props.header}</h2>
       </header>
-      <form onSubmit={onSubmit ? onSubmit : (e) => e.preventDefault()}>
-        <div className={`${styles["modal__content"]} ${contentClass}`}>
-          {children}
+      <form
+        onSubmit={
+          props.onSubmit ? props.onSubmit : (event) => event.preventDefault()
+        }
+      >
+        <div className={`modal__content ${props.contentClass}`}>
+          {props.children}
         </div>
-        <footer className={`${styles["modal__footer"]} ${footerClass}`}>
-          {footer}
+        <footer className={`modal__footer ${props.footerClass}`}>
+          {props.footer}
         </footer>
       </form>
     </div>
@@ -36,20 +29,19 @@ const ModalOverlay = (props) => {
 };
 
 const Modal = (props) => {
-  const { show, onCancel } = props;
   return (
-    <>
-      {show && <BackDrop onClick={onCancel} />}
+    <React.Fragment>
+      {props.show && <Backdrop onClick={props.onCancel} />}
       <CSSTransition
-        in={show}
+        in={props.show}
         mountOnEnter
         unmountOnExit
         timeout={200}
-        classNames={styles.modal}
+        classNames="modal"
       >
         <ModalOverlay {...props} />
       </CSSTransition>
-    </>
+    </React.Fragment>
   );
 };
 
