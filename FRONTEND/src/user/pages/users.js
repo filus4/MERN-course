@@ -4,7 +4,7 @@ import UsersList from "../components/users-list";
 
 const DUMMY_USERS = [
   {
-    id: 1,
+    id: "u1",
     name: "Marcel",
     image:
       "https://static.planetminecraft.com/files/image/minecraft/project/2021/199/14520222-aincradrender_xl.webp",
