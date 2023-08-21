@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useEffect } from "react";
 
 import { validate } from "../../util/validators";
 import styles from "./Input.module.css";
@@ -22,13 +22,27 @@ const inputReducer = (state, action) => {
 };
 
 const Input = (props) => {
-  const { id, label, element, placeholder, type, rows, errorText, validators } =
-    props;
+  const {
+    id,
+    label,
+    element,
+    placeholder,
+    type,
+    rows,
+    errorText,
+    validators,
+    onInput,
+  } = props;
 
   const [inputState, dispatch] = useReducer(inputReducer, {
     value: "",
     isValid: false,
   });
+  const { value, isValid } = inputState;
+
+  useEffect(() => {
+    onInput(id, inputState.value, inputState.isValid);
+  }, [id, value, isValid, onInput]);
 
   const changeHandler = (event) => {
     dispatch({ type: "CHANGE", val: event.target.value, validators });
