@@ -1,11 +1,11 @@
-import React, { useRef, useEffect } from "react";
+import React from "react";
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
 
 import { GOOGLE_MAPS_API_KEY } from "../../../env";
 import styles from "./Map.module.css";
 
 const Map = (props) => {
-  const { style, className, center, zoom } = props;
+  const { className, center, zoom } = props;
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: GOOGLE_MAPS_API_KEY,

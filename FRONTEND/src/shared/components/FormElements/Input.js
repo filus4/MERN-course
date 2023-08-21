@@ -41,11 +41,10 @@ const Input = (props) => {
     isTouched: false,
     isValid: valid || false,
   });
-  const { value, isValid } = inputState;
 
   useEffect(() => {
     onInput(id, inputState.value, inputState.isValid);
-  }, [id, value, isValid, onInput]);
+  }, [id, inputState.value, inputState.isValid, onInput]);
 
   const changeHandler = (event) => {
     dispatch({ type: "CHANGE", val: event.target.value, validators });
