@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 
 import Input from "../../shared/components/FormElements/Input";
 import Button from "../../shared/components/FormElements/Button";
@@ -10,9 +10,11 @@ import {
 } from "../../shared/util/validators";
 import styles from "./auth.module.css";
 import Card from "../../shared/components/UI/Card";
+import { AuthContext } from "../../shared/context/auth-context";
 
 const Auth = () => {
   const [isLoginForm, setIsLoginForm] = useState(true);
+  const auth = useContext(AuthContext);
   const [formState, inputHandler, setFormData] = useForm(
     {
       email: {
@@ -89,7 +91,11 @@ const Auth = () => {
           errorText="Please enter a valid password, at least 5 charakters."
           onInput={inputHandler}
         />
-        <Button type="submit" disabled={!formState.isValid}>
+        <Button
+          onClick={auth.login}
+          type="submit"
+          disabled={!formState.isValid}
+        >
           Login
         </Button>
       </form>
