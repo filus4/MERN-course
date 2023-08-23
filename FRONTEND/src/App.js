@@ -11,7 +11,7 @@ import NewPlace from "./places/pages/new-place";
 import MainNavigation from "./shared/components/Navigation/main-navigation";
 import UpdatePlace from "./places/pages/update-place";
 import UserPlaces from "./places/pages/user-places";
-import Authenticate from "./user/pages/authenticate";
+import Authenticate from "./user/pages/auth";
 
 function App() {
   return (
