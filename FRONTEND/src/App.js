@@ -11,7 +11,8 @@ import NewPlace from "./places/pages/new-place";
 import MainNavigation from "./shared/components/Navigation/main-navigation";
 import UpdatePlace from "./places/pages/update-place";
 import UserPlaces from "./places/pages/user-places";
-import Authenticate from "./user/pages/auth";
+import Auth from "./user/pages/auth";
+import { AuthContext } from "./shared/context/auth-context";
 
 function App() {
   return (
@@ -32,7 +33,7 @@ function App() {
             <UpdatePlace />
           </Route>
           <Route path="/auth" exact>
-            <Authenticate />
+            <Auth />
           </Route>
           <Redirect to="/" />
         </Switch>

@@ -11,7 +11,7 @@ import {
 import styles from "./auth.module.css";
 import Card from "../../shared/components/UI/Card";
 
-const Authenticate = () => {
+const Auth = () => {
   const [isLoginForm, setIsLoginForm] = useState(true);
   const [formState, inputHandler, setFormData] = useForm(
     {
@@ -100,4 +100,4 @@ const Authenticate = () => {
   );
 };
 
-export default Authenticate;
+export default Auth;
