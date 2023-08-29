@@ -64,10 +64,14 @@ const signup = async (req, res, next) => {
   res.status(201).json({ user: createdUser.toObject({ getters: true }) });
 };
 
-const login = (req, res, next) => {
+const login = async (req, res, next) => {
   const { email, password } = req.body;
+  try {
+    identifiedUser = await User.findOne({ email });
+  } catch (err) {
+    return next(new HttpError("Could not find a user.", 500));
+  }
 
-  const identifiedUser = DUMMY_USERS.find((u) => u.email === email);
   if (identifiedUser && identifiedUser.password === password) {
     res.status(200).json({ message: "Successful login." });
   } else {
