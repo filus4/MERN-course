@@ -2,6 +2,7 @@ const { v4: uuidv4 } = require("uuid");
 const { validationResult } = require("express-validator");
 
 const HttpError = require("../models/http-error");
+const User = require("../models/user");
 
 const DUMMY_USERS = [
   {
@@ -22,7 +23,7 @@ const getAllUsers = (req, res, next) => {
   res.status(200).json({ users: DUMMY_USERS });
 };
 
-const signup = (req, res, next) => {
+const signup = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(
@@ -30,26 +31,39 @@ const signup = (req, res, next) => {
     );
   }
 
-  const { name, email, password } = req.body;
+  const { name, email, password, places } = req.body;
 
-  const hasUser = DUMMY_USERS.find((u) => u.email === email);
-  if (hasUser) {
+  let existingUser;
+  try {
+    existingUser = await User.findOne({ email });
+  } catch (err) {
+    return next(new HttpError("Could not find a user.", 500));
+  }
+
+  if (existingUser) {
     return next(
-      new HttpError("User with the given address email already exist.", 422)
+      new HttpError("User exists already, please login instead.", 422)
     );
   }
 
-  const createdUser = {
-    id: uuidv4(),
+  const createdUser = new User({
     name,
     email,
     password,
-  };
+    image:
+      "https://static.wikia.nocookie.net/swordartonline/images/0/06/Asuna_with_Yui_Biprobe.png/revision/latest?cb=20141220180221",
+    places,
+  });
 
-  DUMMY_USERS.push(createdUser);
+  try {
+    await createdUser.save();
+  } catch (err) {
+    return next(new HttpError("Signing Up failed, please try again.", 500));
+  }
 
-  res.status(201).json({ user: createdUser });
+  res.status(201).json({ user: createdUser.toObject({ getters: true }) });
 };
+
 const login = (req, res, next) => {
   const { email, password } = req.body;
 
