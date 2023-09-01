@@ -40,7 +40,7 @@ const signup = async (req, res, next) => {
     );
   }
 
-  const { name, email, password, places } = req.body;
+  const { name, email, password } = req.body;
 
   let existingUser;
   try {
@@ -61,7 +61,7 @@ const signup = async (req, res, next) => {
     password,
     image:
       "https://static.wikia.nocookie.net/swordartonline/images/0/06/Asuna_with_Yui_Biprobe.png/revision/latest?cb=20141220180221",
-    places,
+    places: [],
   });
 
   try {
