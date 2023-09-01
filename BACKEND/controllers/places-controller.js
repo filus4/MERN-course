@@ -1,11 +1,10 @@
-const { v4: uuidv4 } = require("uuid");
+const mongoose = require("mongoose");
 const { validationResult } = require("express-validator");
 
 const HttpError = require("../models/http-error");
 const getCoordsForAddress = require("../util/location");
 const Place = require("../models/place");
 const User = require("../models/user");
-const { default: mongoose } = require("mongoose");
 
 const getPlaceById = async (req, res, next) => {
   const placeId = req.params.pid;
@@ -75,14 +74,13 @@ const createPlace = async (req, res, next) => {
     creator,
     location: coordinates,
     image: "https://images6.alphacoders.com/127/1277972.jpg",
-    creator,
   });
 
   let user;
   try {
-    user = User.findById(creator);
+    user = await User.findById(creator);
   } catch (err) {
-    return next(new HttpError("Creating place failed, try again later.", 500));
+    return next(new HttpError("Creating place failed, try again.", 500));
   }
 
   if (!user) {
@@ -91,14 +89,14 @@ const createPlace = async (req, res, next) => {
 
   try {
     const session = await mongoose.startSession();
-    session.transaction();
+    session.startTransaction();
     await createdPlace.save({ session });
     user.places.push(createdPlace);
     await user.save({ session });
     // Only at this point any changes will apply to the database.
     await session.commitTransaction();
   } catch (err) {
-    return next(new HttpError("Creating place failed, please try again.", 500));
+    return next(new HttpError("Creating place failed, try again later.", 500));
   }
 
   res.status(201).json({ place: createdPlace });
