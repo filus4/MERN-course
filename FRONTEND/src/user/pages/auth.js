@@ -29,9 +29,31 @@ const Auth = () => {
     false
   );
 
-  const authSubmitHandler = (event) => {
+  const authSubmitHandler = async (event) => {
     event.preventDefault();
-    console.log(formState.inputs);
+
+    if (isLoginForm) {
+    } else {
+      try {
+        const response = await fetch("http://localhost:5000/api/users/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: formState.inputs.name.value,
+            email: formState.inputs.email.value,
+            password: formState.inputs.password.value,
+          }),
+        });
+
+        const data = await response.json();
+        console.log(data);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    auth.login();
   };
 
   const toggleAuthModeHandler = () => {
@@ -91,12 +113,8 @@ const Auth = () => {
           errorText="Please enter a valid password, at least 5 charakters."
           onInput={inputHandler}
         />
-        <Button
-          onClick={auth.login}
-          type="submit"
-          disabled={!formState.isValid}
-        >
-          Login
+        <Button type="submit" disabled={!formState.isValid}>
+          {isLoginForm ? "LOGIN" : "SIGNUP"}
         </Button>
       </form>
       <Button type="button" onClick={toggleAuthModeHandler}>
