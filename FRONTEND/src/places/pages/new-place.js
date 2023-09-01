@@ -38,7 +38,6 @@ const NewPlace = () => {
 
   const placeSubmitHandler = async (event) => {
     event.preventDefault();
-    console.log(formState.inputs); // send this to the backend
     const newPlace = {
       title: formState.inputs.title.value,
       description: formState.inputs.description.value,
