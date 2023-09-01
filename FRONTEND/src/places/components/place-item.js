@@ -5,13 +5,17 @@ import Button from "../../shared/components/FormElements/Button";
 import Modal from "../../shared/components/UI/Modal";
 import Map from "../../shared/components/UI/Map";
 import { AuthContext } from "../../shared/context/auth-context";
+import { useHttpClient } from "../../shared/hooks/http-hook";
+import ErrorModal from "../../shared/components/UI/ErrorModal";
+import LoadingSpinner from "../../shared/components/UI/LoadingSpinner";
 import styles from "./place-item.module.css";
 
 const PlaceItem = (props) => {
+  const auth = useContext(AuthContext);
+  const { isLoading, error, clearError, sendRequest } = useHttpClient();
   const [showMap, setShowMap] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const auth = useContext(AuthContext);
-  const { id, image, title, description, address, creatorId, coordinates } =
+  const { id, image, title, description, address, coordinates, onDelete } =
     props;
 
   const toggleMapHandler = () => {
@@ -22,12 +26,16 @@ const PlaceItem = (props) => {
     setShowConfirmModal((prevState) => !prevState);
   };
 
-  const confirmDeleteHandler = () => {
-    console.log("DELETING");
+  const confirmDeleteHandler = async () => {
     toggleConfirmModal();
+    try {
+      await sendRequest(`http://localhost:5000/api/places/${id}`, "DELETE");
+      onDelete(id);
+    } catch (error) {}
   };
   return (
     <>
+      <ErrorModal error={error} onClear={clearError} />
       <Modal
         show={showMap}
         onCancel={toggleMapHandler}
@@ -63,6 +71,11 @@ const PlaceItem = (props) => {
       </Modal>
       <li className={styles["place-item"]}>
         <Card className={styles["place-item__content"]}>
+          {isLoading && (
+            <div className="center">
+              <LoadingSpinner asOverlay />
+            </div>
+          )}
           <div className={styles["place-item__image"]}>
             <img src={image} alt={title} />
           </div>
