@@ -15,8 +15,16 @@ const PlaceItem = (props) => {
   const { isLoading, error, clearError, sendRequest } = useHttpClient();
   const [showMap, setShowMap] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const { id, image, title, description, address, coordinates, onDelete } =
-    props;
+  const {
+    id,
+    image,
+    title,
+    description,
+    address,
+    creatorId,
+    coordinates,
+    onDelete,
+  } = props;
 
   const toggleMapHandler = () => {
     setShowMap((prevState) => !prevState);
@@ -88,7 +96,7 @@ const PlaceItem = (props) => {
             <Button inverse onClick={toggleMapHandler}>
               VIEW ON MAP
             </Button>
-            {auth.isLoggedIn && (
+            {auth.userId === creatorId && (
               <>
                 <Button to={`/places/${id}`}>EDIT</Button>
                 <Button onClick={toggleConfirmModal} danger>
