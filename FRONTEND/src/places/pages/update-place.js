@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom/cjs/react-router-dom";
+import React, { useEffect, useState, useContext } from "react";
+import { useParams, useHistory } from "react-router-dom/cjs/react-router-dom";
 
 import Input from "../../shared/components/FormElements/Input";
 import Button from "../../shared/components/FormElements/Button";
@@ -8,40 +8,18 @@ import {
   VALIDATOR_MINLENGTH,
 } from "../../shared/util/validators";
 import { useForm } from "../../shared/hooks/form-hook";
-import Card from "../../shared/components/UI/Card";
+import { useHttpClient } from "../../shared/hooks/http-hook";
 import styles from "./place-form.module.css";
-
-const DUMMY_PLACES = [
-  {
-    id: "p1",
-    title: "Aincrad First Floor",
-    description: "The first of 100 Aincrad's floors.",
-    imageUrl:
-      "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/6ccf5748-0456-43d6-a1fb-1a059b88dbf0/d9amwdh-56de3a7f-4af4-46a8-89b9-3b6eb4a7b7fb.jpg/v1/fill/w_1280,h_936,q_75,strp/photomanipulation___sword_art_online___floor_1_by_dillios_d9amwdh-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9OTM2IiwicGF0aCI6IlwvZlwvNmNjZjU3NDgtMDQ1Ni00M2Q2LWExZmItMWEwNTliODhkYmYwXC9kOWFtd2RoLTU2ZGUzYTdmLTRhZjQtNDZhOC04OWI5LTNiNmViNGE3YjdmYi5qcGciLCJ3aWR0aCI6Ijw9MTI4MCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.DaQNiqh4SC_Up3t6M3nQA0qSjQfDxyFUZea0HPJ4VJM",
-    address: "20 W 34th St., New York, NY 10001",
-    location: {
-      lat: 40.748817,
-      lng: -73.985428,
-    },
-    creatorId: "u1",
-  },
-  {
-    id: "p2",
-    title: "Aincrad First Floor",
-    description: "The first of 100 Aincrad's floors.",
-    imageUrl:
-      "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/6ccf5748-0456-43d6-a1fb-1a059b88dbf0/d9amwdh-56de3a7f-4af4-46a8-89b9-3b6eb4a7b7fb.jpg/v1/fill/w_1280,h_936,q_75,strp/photomanipulation___sword_art_online___floor_1_by_dillios_d9amwdh-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9OTM2IiwicGF0aCI6IlwvZlwvNmNjZjU3NDgtMDQ1Ni00M2Q2LWExZmItMWEwNTliODhkYmYwXC9kOWFtd2RoLTU2ZGUzYTdmLTRhZjQtNDZhOC04OWI5LTNiNmViNGE3YjdmYi5qcGciLCJ3aWR0aCI6Ijw9MTI4MCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.DaQNiqh4SC_Up3t6M3nQA0qSjQfDxyFUZea0HPJ4VJM",
-    address: "20 W 34th St., New York, NY 10001",
-    location: {
-      lat: 40.748817,
-      lng: -73.985428,
-    },
-    creatorId: "u2",
-  },
-];
+import ErrorModal from "../../shared/components/UI/ErrorModal";
+import LoadingSpinner from "../../shared/components/UI/LoadingSpinner";
+import { AuthContext } from "../../shared/context/auth-context";
+import Card from "../../shared/components/UI/Card";
 
 const UpdatePlace = () => {
-  const [isLoading, setIsLoading] = useState(true);
+  const { isLoading, error, clearError, sendRequest } = useHttpClient();
+  const [loadedPlace, setLoadedPlace] = useState();
+  const authCtx = useContext(AuthContext);
+  const history = useHistory();
   const placeId = useParams().placeId;
 
   const [formState, inputHandler, setFormData] = useForm(
@@ -57,33 +35,61 @@ const UpdatePlace = () => {
     },
     false
   );
-  const identifiedPlace = DUMMY_PLACES.find((place) => place.id === placeId);
 
   useEffect(() => {
-    if (identifiedPlace) {
-      setFormData(
-        {
-          title: {
-            value: identifiedPlace.title,
-            isValid: true,
-          },
-          description: {
-            value: identifiedPlace.description,
-            isValid: true,
-          },
-        },
-        true
-      );
-    }
-    setIsLoading(false);
-  }, [setFormData, identifiedPlace]);
+    const fetchPlace = async () => {
+      try {
+        const data = await sendRequest(
+          `http://localhost:5000/api/places/${placeId}`
+        );
 
-  const submitUpdateHandler = (event) => {
+        setLoadedPlace(data.place);
+        setFormData(
+          {
+            title: {
+              value: data.place.title,
+              isValid: true,
+            },
+            description: {
+              value: data.place.description,
+              isValid: true,
+            },
+          },
+          true
+        );
+      } catch (err) {}
+    };
+    fetchPlace();
+  }, [placeId, sendRequest, setFormData]);
+
+  const submitUpdateHandler = async (event) => {
     event.preventDefault();
-    console.log(formState);
+
+    const editedPlace = {
+      title: formState.inputs.title.value,
+      description: formState.inputs.description.value,
+    };
+
+    try {
+      await sendRequest(
+        `http://localhost:5000/api/places/${placeId}`,
+        "PATCH",
+        JSON.stringify(editedPlace),
+        { "Content-Type": "application/json" }
+      );
+      history.push(`/${authCtx.userId}/places`);
+    } catch (error) {}
   };
 
-  if (!identifiedPlace) {
+  if (isLoading) {
+    return (
+      <div className="center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (!loadedPlace && !error) {
     return (
       <div className="center">
         <Card>
@@ -93,41 +99,38 @@ const UpdatePlace = () => {
     );
   }
 
-  if (isLoading) {
-    return (
-      <div className="center">
-        <h2>Loading...</h2>
-      </div>
-    );
-  }
-
   return (
-    <form onSubmit={submitUpdateHandler} className={styles["place-form"]}>
-      <Input
-        id="title"
-        element="input"
-        type="text"
-        label="Title"
-        validators={[VALIDATOR_REQUIRE()]}
-        errorText="Please enter a valid title."
-        onInput={inputHandler}
-        initialValue={formState.inputs.title.value}
-        initialValid={formState.inputs.title.isValid}
-      />
-      <Input
-        id="description"
-        element="textarea"
-        label="Description"
-        validators={[VALIDATOR_MINLENGTH(5)]}
-        errorText="Please enter a valid description (min. 5 charakters)."
-        onInput={inputHandler}
-        initialValue={formState.inputs.description.value}
-        initialValid={formState.inputs.description.isValid}
-      />
-      <Button type="submit" disabled={!formState.isValid}>
-        UPDATE PLACE
-      </Button>
-    </form>
+    <>
+      <ErrorModal error={error} onClear={clearError} />
+      {!isLoading && loadedPlace && (
+        <form onSubmit={submitUpdateHandler} className={styles["place-form"]}>
+          <Input
+            id="title"
+            element="input"
+            type="text"
+            label="Title"
+            validators={[VALIDATOR_REQUIRE()]}
+            errorText="Please enter a valid title."
+            onInput={inputHandler}
+            initialValue={loadedPlace.title}
+            initialValid={true}
+          />
+          <Input
+            id="description"
+            element="textarea"
+            label="Description"
+            validators={[VALIDATOR_MINLENGTH(5)]}
+            errorText="Please enter a valid description (min. 5 charakters)."
+            onInput={inputHandler}
+            initialValue={loadedPlace.description}
+            initialValid={true}
+          />
+          <Button type="submit" disabled={!formState.isValid}>
+            UPDATE PLACE
+          </Button>
+        </form>
+      )}
+    </>
   );
 };
 
