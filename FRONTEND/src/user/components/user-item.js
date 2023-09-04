@@ -14,7 +14,7 @@ const UserItem = (props) => {
       <Card className={styles["user-item__content"]}>
         <Link to={`/${id}/places`}>
           <div className={styles["user-item__image"]}>
-            <Avatar image={image} alt={name} />
+            <Avatar image={`http://localhost:5000/${image}`} alt={name} />
           </div>
           <div className={styles["user-item__info"]}>
             <h2>{name}</h2>
