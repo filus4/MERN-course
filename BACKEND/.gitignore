@@ -3,6 +3,9 @@
 # api
 api.js
 
+# images
+uploads/images/*
+
 # dependencies
 /node_modules
 /.pnp
