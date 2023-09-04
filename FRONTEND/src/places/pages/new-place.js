@@ -12,6 +12,7 @@ import { useHttpClient } from "../../shared/hooks/http-hook";
 import ErrorModal from "../../shared/components/UI/ErrorModal";
 import LoadingSpinner from "../../shared/components/UI/LoadingSpinner";
 import { AuthContext } from "../../shared/context/auth-context";
+import ImageUpload from "../../shared/components/FormElements/ImageUpload";
 import styles from "./place-form.module.css";
 
 const NewPlace = () => {
@@ -31,6 +32,10 @@ const NewPlace = () => {
         value: "",
         isValid: false,
       },
+      image: {
+        value: null,
+        isValid: false,
+      },
     },
     false
   );
@@ -38,19 +43,15 @@ const NewPlace = () => {
 
   const placeSubmitHandler = async (event) => {
     event.preventDefault();
-    const newPlace = {
-      title: formState.inputs.title.value,
-      description: formState.inputs.description.value,
-      address: formState.inputs.address.value,
-      creator: authCtx.userId,
-    };
+    const formData = new FormData();
+    formData.append("title", formState.inputs.title.value);
+    formData.append("description", formState.inputs.description.value);
+    formData.append("address", formState.inputs.address.value);
+    formData.append("creator", authCtx.userId);
+    formData.append("image", formState.inputs.image.value);
+
     try {
-      await sendRequest(
-        "http://localhost:5000/api/places",
-        "POST",
-        JSON.stringify(newPlace),
-        { "Content-Type": "application/json" }
-      );
+      await sendRequest("http://localhost:5000/api/places", "POST", formData);
       history.push("/");
     } catch (err) {}
   };
@@ -84,6 +85,12 @@ const NewPlace = () => {
           validators={[VALIDATOR_REQUIRE()]}
           errorText="Please enter a valid address."
           onInput={inputHandler}
+        />
+        <ImageUpload
+          center
+          id="image"
+          onInput={inputHandler}
+          errorText="Please provide an image."
         />
         <Button type="submit" disabled={!formState.isValid}>
           ADD PLACE
