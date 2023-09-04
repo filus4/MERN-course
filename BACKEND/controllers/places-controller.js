@@ -83,7 +83,7 @@ const createPlace = async (req, res, next) => {
     address,
     creator,
     location: coordinates,
-    image: "https://images6.alphacoders.com/127/1277972.jpg",
+    image: req.file.path,
   });
 
   let user;
