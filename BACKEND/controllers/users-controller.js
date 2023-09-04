@@ -24,7 +24,7 @@ const signup = async (req, res, next) => {
     );
   }
 
-  const { name, email, password } = req.body;
+  const { name, email, password, image } = req.body;
 
   let existingUser;
   try {
@@ -43,7 +43,7 @@ const signup = async (req, res, next) => {
     name,
     email,
     password,
-    image: "https://images.alphacoders.com/131/thumb-1920-1316829.png",
+    image: req.file.path,
     places: [],
   });
 
