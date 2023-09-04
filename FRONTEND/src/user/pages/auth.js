@@ -13,6 +13,7 @@ import Card from "../../shared/components/UI/Card";
 import { AuthContext } from "../../shared/context/auth-context";
 import ErrorModal from "../../shared/components/UI/ErrorModal";
 import LoadingSpinner from "../../shared/components/UI/LoadingSpinner";
+import ImageUpload from "../../shared/components/FormElements/ImageUpload";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 
 const Auth = () => {
@@ -37,6 +38,8 @@ const Auth = () => {
 
   const authSubmitHandler = async (event) => {
     event.preventDefault();
+
+    console.log(formState.inputs);
 
     if (isLoginForm) {
       try {
@@ -80,6 +83,7 @@ const Auth = () => {
         {
           ...formState.inputs,
           name: undefined,
+          image: undefined,
         },
         formState.inputs.email.isValid && formState.inputs.password.isValid
       );
@@ -89,6 +93,10 @@ const Auth = () => {
           ...formState.inputs,
           name: {
             value: "",
+            isValid: false,
+          },
+          image: {
+            value: null,
             isValid: false,
           },
         },
@@ -115,6 +123,9 @@ const Auth = () => {
               validators={[VALIDATOR_REQUIRE()]}
               onInput={inputHandler}
             />
+          )}
+          {!isLoginForm && (
+            <ImageUpload center id="image" onInput={inputHandler} />
           )}
           <Input
             id="email"
