@@ -85,7 +85,7 @@ const PlaceItem = (props) => {
             </div>
           )}
           <div className={styles["place-item__image"]}>
-            <img src={image} alt={title} />
+            <img src={`http://localhost:5000/${image}`} alt={title} />
           </div>
           <div className={styles["place-item__info"]}>
             <h2>{title}</h2>
