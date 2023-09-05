@@ -53,7 +53,7 @@ const Auth = () => {
           }
         );
 
-        auth.login(data.user.id);
+        auth.login(data.userId);
       } catch (err) {}
     } else {
       try {
@@ -68,7 +68,7 @@ const Auth = () => {
           formData
         );
 
-        auth.login(data.user.id);
+        auth.login(data.userId);
       } catch (err) {}
     }
   };
