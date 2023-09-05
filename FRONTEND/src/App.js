@@ -14,8 +14,11 @@ import UserPlaces from "./places/pages/user-places";
 import Auth from "./user/pages/auth";
 import { AuthContext } from "./shared/context/auth-context";
 
+let logoutTimer;
+
 function App() {
   const [token, setToken] = useState(false);
+  const [tokenExpirationDate, setTokenExpirationDate] = useState();
   const [userId, setUserId] = useState(null);
 
   const login = useCallback((userId, token, expirationDate) => {
@@ -23,6 +26,7 @@ function App() {
     setUserId(userId);
     const tokenExpirationDate =
       expirationDate || new Date(new Date().getTime() + 1000 * 60 * 60);
+    setTokenExpirationDate(tokenExpirationDate);
     localStorage.setItem(
       "userData",
       JSON.stringify({
@@ -34,6 +38,7 @@ function App() {
   }, []);
   const logout = useCallback(() => {
     setToken(null);
+    setTokenExpirationDate(null);
     setUserId(null);
     localStorage.removeItem("userData");
   }, []);
@@ -52,6 +57,16 @@ function App() {
       );
     }
   }, [login]);
+
+  useEffect(() => {
+    if (token && tokenExpirationDate) {
+      const remainingTime =
+        tokenExpirationDate.getTime() - new Date().getTime();
+      logoutTimer = setTimeout(logout, remainingTime);
+    } else {
+      clearTimeout(logoutTimer);
+    }
+  }, [token, logout, tokenExpirationDate]);
 
   let routes;
   if (token) {
