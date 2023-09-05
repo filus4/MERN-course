@@ -53,7 +53,7 @@ const Auth = () => {
           }
         );
 
-        auth.login(data.userId);
+        auth.login(data.userId, data.token);
       } catch (err) {}
     } else {
       try {
@@ -68,7 +68,7 @@ const Auth = () => {
           formData
         );
 
-        auth.login(data.userId);
+        auth.login(data.userId, data.token);
       } catch (err) {}
     }
   };
