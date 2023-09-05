@@ -133,6 +133,10 @@ const editPlace = async (req, res, next) => {
     );
   }
 
+  if (place.creator.toString() !== req.userData.userId) {
+    new HttpError("You are not allowed to edit this place", 401);
+  }
+
   place.title = title;
   place.description = description;
 
