@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -13,61 +13,10 @@ import UpdatePlace from "./places/pages/update-place";
 import UserPlaces from "./places/pages/user-places";
 import Auth from "./user/pages/auth";
 import { AuthContext } from "./shared/context/auth-context";
-
-let logoutTimer;
+import { useAuth } from "./shared/hooks/auth-hook";
 
 function App() {
-  const [token, setToken] = useState(false);
-  const [tokenExpirationDate, setTokenExpirationDate] = useState();
-  const [userId, setUserId] = useState(null);
-
-  const login = useCallback((userId, token, expirationDate) => {
-    setToken(token);
-    setUserId(userId);
-    const tokenExpirationDate =
-      expirationDate || new Date(new Date().getTime() + 1000 * 60 * 60);
-    setTokenExpirationDate(tokenExpirationDate);
-    localStorage.setItem(
-      "userData",
-      JSON.stringify({
-        userId,
-        token,
-        expiration: tokenExpirationDate.toISOString(),
-      })
-    );
-  }, []);
-  const logout = useCallback(() => {
-    setToken(null);
-    setTokenExpirationDate(null);
-    setUserId(null);
-    localStorage.removeItem("userData");
-  }, []);
-
-  useEffect(() => {
-    const storedData = JSON.parse(localStorage.getItem("userData"));
-    if (
-      storedData &&
-      storedData.token &&
-      new Date(storedData.expiration) > new Date()
-    ) {
-      login(
-        storedData.userId,
-        storedData.token,
-        new Date(storedData.expiration)
-      );
-    }
-  }, [login]);
-
-  useEffect(() => {
-    if (token && tokenExpirationDate) {
-      const remainingTime =
-        tokenExpirationDate.getTime() - new Date().getTime();
-      logoutTimer = setTimeout(logout, remainingTime);
-    } else {
-      clearTimeout(logoutTimer);
-    }
-  }, [token, logout, tokenExpirationDate]);
-
+  const { login, logout, token, userId } = useAuth();
   let routes;
   if (token) {
     routes = (
