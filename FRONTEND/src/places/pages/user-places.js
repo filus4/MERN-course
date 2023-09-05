@@ -3,12 +3,11 @@ import { useParams } from "react-router-dom/cjs/react-router-dom";
 
 import PlaceList from "../components/place-list";
 import { useHttpClient } from "../../shared/hooks/http-hook";
-import ErrorModal from "../../shared/components/UI/ErrorModal";
 import LoadingSpinner from "../../shared/components/UI/LoadingSpinner";
 
 const UserPlaces = (props) => {
   const [loadedPlaces, setLoadedPlaces] = useState([]);
-  const { isLoading, error, clearError, sendRequest } = useHttpClient();
+  const { isLoading, sendRequest } = useHttpClient();
   const userId = useParams().userId;
 
   useEffect(() => {
@@ -31,7 +30,6 @@ const UserPlaces = (props) => {
 
   return (
     <>
-      <ErrorModal error={error} onClear={clearError} />
       {isLoading && (
         <div className="center">
           <LoadingSpinner />
