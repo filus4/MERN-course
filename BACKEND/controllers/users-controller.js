@@ -72,14 +72,27 @@ const login = async (req, res, next) => {
     return next(new HttpError("Could not find a user.", 500));
   }
 
-  if (identifiedUser && identifiedUser.password === password) {
-    res.status(200).json({
-      message: "Successful login.",
-      user: identifiedUser.toObject({ getters: true }),
-    });
-  } else {
+  if (identifiedUser) {
     return next(new HttpError("Wrong credentials.", 401));
   }
+
+  let isValidPassword = false;
+  try {
+    isValidPassword = await bcrypt.compare(password, existingUser.password);
+  } catch (err) {
+    return next(
+      new HttpError("Could not log you in, plase check your credentials.", 500)
+    );
+  }
+
+  if (!isValidPassword) {
+    return next(new HttpError("Wrong credentials.", 401));
+  }
+
+  res.status(200).json({
+    message: "Successful login.",
+    user: identifiedUser.toObject({ getters: true }),
+  });
 };
 
 exports.getAllUsers = getAllUsers;
