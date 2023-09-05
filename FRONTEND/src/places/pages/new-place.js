@@ -51,7 +51,9 @@ const NewPlace = () => {
     formData.append("image", formState.inputs.image.value);
 
     try {
-      await sendRequest("http://localhost:5000/api/places", "POST", formData);
+      await sendRequest("http://localhost:5000/api/places", "POST", formData, {
+        Authorization: `Bearer ${authCtx.token}`,
+      });
       history.push("/");
     } catch (err) {}
   };

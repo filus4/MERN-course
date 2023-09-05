@@ -75,7 +75,10 @@ const UpdatePlace = () => {
         `http://localhost:5000/api/places/${placeId}`,
         "PATCH",
         JSON.stringify(editedPlace),
-        { "Content-Type": "application/json" }
+        {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authCtx.token}`,
+        }
       );
       history.push(`/${authCtx.userId}/places`);
     } catch (error) {}
