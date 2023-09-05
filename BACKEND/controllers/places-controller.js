@@ -70,7 +70,7 @@ const createPlace = async (req, res, next) => {
     );
   }
 
-  const { title, description, address, creator } = req.body;
+  const { title, description, address } = req.body;
 
   let coordinates;
   try {
@@ -83,14 +83,14 @@ const createPlace = async (req, res, next) => {
     title,
     description,
     address,
-    creator,
+    creator: req.userData.userId,
     location: coordinates,
     image: req.file.path,
   });
 
   let user;
   try {
-    user = await User.findById(creator);
+    user = await User.findById(req.userData.userId);
   } catch (err) {
     return next(new HttpError("Creating place failed, try again.", 500));
   }
@@ -187,7 +187,7 @@ const deletePlace = async (req, res, next) => {
   }
 
   fs.unlink(imagePath, (err) => {
-    console.log(err);
+    // console.log(err);
   });
 
   res.status(200).json({ message: "Deleted place." });
